@@ -35,6 +35,8 @@ class MainMenu:
                             Credits()
                         if self.exit:
                             running = False
+                        if self.start:
+                            StartGame()
                     if self.start:
                         if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
                             self.start = 0
@@ -150,6 +152,74 @@ class Credits:
             pygame.display.flip()
 
             self.clock.tick(self.speed)
+
+
+class StartGame(MainMenu):
+    def __init__(self):
+        pygame.init()
+        pygame.display.set_caption('Rocks Party')
+        self.size = width, height = 1100, 700
+        self.screen = pygame.display.set_mode(self.size)
+        self.screen.fill((0, 0, 0))
+
+        self.all_sprites = pygame.sprite.Group()
+
+        self.Game()
+
+    def Game(self):
+        self.all_sprites = pygame.sprite.Group()
+        # создадим спрайт
+        # определим его вид
+        # и размеры
+        Player1(self.all_sprites)
+        Player2(self.all_sprites)
+
+        running = True
+        while running:
+            self.screen.fill((0, 0, 0))
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+            self.all_sprites.draw(self.screen)
+            self.all_sprites.update(event)
+
+            pygame.display.flip()
+
+
+class Player1(pygame.sprite.Sprite, MainMenu):
+    def __init__(self, group):
+        self.image = self.load_image("cub1.png")
+        self.image = pygame.transform.scale(self.image, (50, 50))
+        super().__init__(group)
+        self.rect = self.image.get_rect()
+        self.rect.x = 200
+        self.rect.y = 200
+
+    def update(self, *args):
+        if args:
+            pressed = pygame.key.get_pressed()
+            if pressed[pygame.K_a]:
+                self.rect = self.rect.move(-1, 0)
+            if pressed[pygame.K_d]:
+                self.rect = self.rect.move(1, 0)
+
+
+class Player2(pygame.sprite.Sprite, MainMenu):
+    def __init__(self, group):
+        self.image = self.load_image("cub2.png")
+        self.image = pygame.transform.scale(self.image, (50, 50))
+        super().__init__(group)
+        self.rect = self.image.get_rect()
+        self.rect.x = 200
+        self.rect.y = 400
+
+    def update(self, *args):
+        if args:
+            pressed = pygame.key.get_pressed()
+            if pressed[pygame.K_LEFT]:
+                self.rect = self.rect.move(-1, 0)
+            if pressed[pygame.K_RIGHT]:
+                self.rect = self.rect.move(1, 0)
 
 
 if __name__ == '__main__':
