@@ -14,7 +14,7 @@ class MainMenu:
         self.screen = pygame.display.set_mode(self.size)
         self.screen.fill((0, 0, 0))
 
-        self.start = 0
+        self.start = 1
         self.exit = 0
         self.rules = 0
         self.credits = 0
@@ -29,6 +29,37 @@ class MainMenu:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                if event.type == pygame.KEYDOWN:
+                    if self.start:
+                        if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
+                            self.start = 0
+                            self.credits = 1
+                        if event.key == pygame.K_s or event.key == pygame.K_DOWN:
+                            self.start = 0
+                            self.rules = 1
+                    if self.credits:
+                        if event.key == pygame.K_a or event.key == pygame.K_LEFT:
+                            self.start = 1
+                            self.credits = 0
+                        if event.key == pygame.K_s or event.key == pygame.K_DOWN:
+                            self.credits = 0
+                            self.exit = 1
+                    if self.rules:
+                        if event.key == pygame.K_w or event.key == pygame.K_UP:
+                            self.start = 1
+                            self.rules = 0
+                        if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
+                            self.rules = 0
+                            self.exit = 1
+                    if self.exit:
+                        if event.key == pygame.K_w or event.key == pygame.K_UP:
+                            self.credits = 1
+                            self.exit = 0
+                        if event.key == pygame.K_a or event.key == pygame.K_LEFT:
+                            self.rules = 1
+                            self.exit = 0
+
+                    self.set_img()
 
             pygame.display.flip()
 
