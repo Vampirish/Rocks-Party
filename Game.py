@@ -30,6 +30,11 @@ class MainMenu:
                 if event.type == pygame.QUIT:
                     running = False
                 if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
+                        if self.credits:
+                            Credits()
+                        if self.exit:
+                            running = False
                     if self.start:
                         if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
                             self.start = 0
@@ -94,6 +99,57 @@ class MainMenu:
         else:
             image = image.convert_alpha()
         return image
+
+
+class Credits:
+    def __init__(self):
+        pygame.init()
+        pygame.display.set_caption('Rocks Party')
+        self.screen = pygame.display.set_mode((1100, 700))
+        self.screen_r = self.screen.get_rect()
+        self.font = pygame.font.SysFont("Arial", 40)
+        self.clock = pygame.time.Clock()
+        self.speed = 60
+
+        self.start()
+
+    def start(self):
+        credit_list = ["CREDITS", " ", " ", "Created by", "KEHES GAMES", " ", "Author", "Kenes Amina", " ",
+                       "Programmer", "Kenes Amina", " ", "Art designer", "Kenes Amina", " ", " ", " ",
+                       "SPECIAL THANKS", " ", "Denis Suahrev",
+                       "Maxim Nikitin", "Eskendir Maratovich", "Kariyeva Dana", "Khiyrullina Lira", "Azalia Korkoran",
+                       "Lena Fam", "Nina Kug",
+                       "Amir Rahimov", "Kenes Balzhan", "Zhaksybekuly Bigazi", "Kenes Aigerim", "Kenes Tileugazy",
+                       "Azalia Korkoran"]
+
+        texts = []
+        for i, line in enumerate(credit_list):
+            s = self.font.render(line, 1, (255, 255, 255))
+            r = s.get_rect(centerx=self.screen_r.centerx, y=self.screen_r.bottom + i * 45)
+            texts.append((r, s))
+
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                    return
+                if event.type == pygame.KEYDOWN and (event.key == pygame.K_SPACE or event.key == pygame.K_RETURN):
+                    if self.speed == 60:
+                        self.speed = 300
+                    else:
+                        self.speed = 60
+
+            self.screen.fill((0, 0, 0))
+
+            for r, s in texts:
+                r.move_ip(0, -1)
+                self.screen.blit(s, r)
+
+            if not self.screen_r.collidelistall([r for (r, _) in texts]):
+                return
+
+            pygame.display.flip()
+
+            self.clock.tick(self.speed)
 
 
 if __name__ == '__main__':
