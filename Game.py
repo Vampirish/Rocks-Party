@@ -37,6 +37,8 @@ class MainMenu:
                             running = False
                         if self.start:
                             StartGame()
+                        if self.rules:
+                            Rules()
                     if self.start:
                         if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
                             self.start = 0
@@ -103,6 +105,34 @@ class MainMenu:
         return image
 
 
+class Rules(MainMenu):
+    def __init__(self):
+        pygame.init()
+        pygame.display.set_caption('Rocks Party')
+        self.size = width, height = 1100, 700
+        self.screen = pygame.display.set_mode(self.size)
+        self.screen.fill((0, 0, 0))
+
+        self.rules_working()
+
+    def set_img(self):
+        image = self.load_image("rules_menu.png")
+        self.screen.blit(image, (0, 0))
+
+    def rules_working(self):
+        self.set_img()
+
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE or event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
+                        running = False
+            pygame.display.flip()
+
+
 class Credits:
     def __init__(self):
         pygame.init()
@@ -118,11 +148,9 @@ class Credits:
     def start(self):
         credit_list = ["CREDITS", " ", " ", "Created by", "KEHES GAMES", " ", "Author", "Kenes Amina", " ",
                        "Programmer", "Kenes Amina", " ", "Art designer", "Kenes Amina", " ", " ", " ",
-                       "SPECIAL THANKS", " ", "Denis Suahrev",
-                       "Maxim Nikitin", "Eskendir Maratovich", "Kariyeva Dana", "Khiyrullina Lira", "Azalia Korkoran",
-                       "Lena Fam", "Nina Kug",
-                       "Amir Rahimov", "Kenes Balzhan", "Zhaksybekuly Bigazi", "Kenes Aigerim", "Kenes Tileugazy",
-                       "Azalia Korkoran"]
+                       "SPECIAL THANKS", " ", "Eskendir Maratovich", "Khodzhaev Damir", "Denis Suharev",
+                       "Kenes Aigerim", "Zhaksybekuly Bigazi", "Abdeldinova Asem",
+                       "Kenes Balzhan", "Assylbek Akzhan", "Kenes Tileugazy"]
 
         texts = []
         for i, line in enumerate(credit_list):
@@ -269,6 +297,18 @@ class Maps(pygame.sprite.Sprite, MainMenu):
         self.mask = pygame.mask.from_surface(self.image)
         self.rect.x = 0
         self.rect.y = 0
+
+
+class Bullet(pygame.sprite.Sprite, MainMenu):
+    def __init__(self, group):
+        self.image = self.load_image("bullet.png")
+        self.image = pygame.transform.scale(self.image, (12, 2))
+        super().__init__(group)
+        self.rect = self.image.get_rect()
+        self.mask = pygame.image.from_surface(self.image)
+
+    def update(self, *args):
+        pass
 
 
 if __name__ == '__main__':
