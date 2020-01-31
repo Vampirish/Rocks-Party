@@ -188,6 +188,7 @@ class Player1(pygame.sprite.Sprite, MainMenu):
     def __init__(self, group):
         self.image = self.load_image("cub1.png")
         self.image = pygame.transform.scale(self.image, (50, 50))
+        self.pl_image = self.image
         super().__init__(group)
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
@@ -199,26 +200,33 @@ class Player1(pygame.sprite.Sprite, MainMenu):
         if args:
             pressed = pygame.key.get_pressed()
             if pressed[pygame.K_a]:
+                self.image = pygame.transform.flip(self.pl_image, 1, 0)
                 self.rect = self.rect.move(-10, -10)
                 if not pygame.sprite.collide_mask(self, self.map):
                     self.rect = self.rect.move(-10, 0)
                 self.rect = self.rect.move(10, 10)
             if pressed[pygame.K_d]:
+                self.image = self.pl_image
                 self.rect = self.rect.move(10, -10)
                 if not pygame.sprite.collide_mask(self, self.map):
                     self.rect = self.rect.move(10, 0)
                 self.rect = self.rect.move(-10, 10)
+            if pressed[pygame.K_w]:
+                if not pygame.sprite.collide_mask(self, self.map):
+                    self.rect = self.rect.move(0, -20)
+                while pygame.sprite.collide_mask(self, self.map):
+                    self.rect = self.rect.move(0, 1)
         if not pygame.sprite.collide_mask(self, self.map):
-            self.rect = self.rect.move(0, 5)
-        else:
-            while not pygame.sprite.collide_mask(self, self.map):
-                self.rect = self.rect.move(0, -1)
+            self.rect = self.rect.move(0, 10)
+        while pygame.sprite.collide_mask(self, self.map):
+            self.rect = self.rect.move(0, -1)
 
 
 class Player2(pygame.sprite.Sprite, MainMenu):
     def __init__(self, group):
         self.image = self.load_image("cub2.png")
         self.image = pygame.transform.scale(self.image, (50, 50))
+        self.pl_image = self.image
         super().__init__(group)
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
@@ -230,20 +238,26 @@ class Player2(pygame.sprite.Sprite, MainMenu):
         if args:
             pressed = pygame.key.get_pressed()
             if pressed[pygame.K_LEFT]:
+                self.image = pygame.transform.flip(self.pl_image, 1, 0)
                 self.rect = self.rect.move(-10, -10)
                 if not pygame.sprite.collide_mask(self, self.map):
                     self.rect = self.rect.move(-10, 0)
                 self.rect = self.rect.move(10, 10)
             if pressed[pygame.K_RIGHT]:
+                self.image = self.pl_image
                 self.rect = self.rect.move(10, -10)
                 if not pygame.sprite.collide_mask(self, self.map):
                     self.rect = self.rect.move(10, 0)
                 self.rect = self.rect.move(-10, 10)
+            if pressed[pygame.K_UP]:
+                if not pygame.sprite.collide_mask(self, self.map):
+                    self.rect = self.rect.move(0, -20)
+                while pygame.sprite.collide_mask(self, self.map):
+                    self.rect = self.rect.move(0, 1)
         if not pygame.sprite.collide_mask(self, self.map):
-            self.rect = self.rect.move(0, 5)
-        else:
-            while not pygame.sprite.collide_mask(self, self.map):
-                self.rect = self.rect.move(0, -1)
+            self.rect = self.rect.move(0, 10)
+        while pygame.sprite.collide_mask(self, self.map):
+            self.rect = self.rect.move(0, -1)
 
 
 class Maps(pygame.sprite.Sprite, MainMenu):
