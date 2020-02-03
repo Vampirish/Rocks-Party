@@ -211,6 +211,8 @@ class StartGame(MainMenu):
                     if event.key == pygame.K_ESCAPE:
                         self.pause = not self.pause
             self.all_sprites.draw(self.screen)
+
+            # PAUSE
             if self.pause:
                 image = self.load_image("pause.png", (255, 255, 255))
                 self.screen.blit(image, (0, 0))
@@ -225,7 +227,8 @@ class StartGame(MainMenu):
 
 class Player1(pygame.sprite.Sprite, MainMenu):
     def __init__(self, group):
-        self.image = self.load_image("cub1.png")
+        self.name = "Player1"
+        self.image = self.load_image("cub1.png", (255, 255, 255))
         self.image = pygame.transform.scale(self.image, (50, 50))
         self.pl_image = self.image
         super().__init__(group)
@@ -269,6 +272,7 @@ class Player1(pygame.sprite.Sprite, MainMenu):
 
 class Player2(pygame.sprite.Sprite, MainMenu):
     def __init__(self, group):
+        self.name = "Player2"
         self.image = self.load_image("cub2.png")
         self.image = pygame.transform.scale(self.image, (50, 50))
         self.pl_image = self.image
@@ -314,6 +318,7 @@ class Player2(pygame.sprite.Sprite, MainMenu):
 
 class Maps(pygame.sprite.Sprite, MainMenu):
     def __init__(self, group):
+        self.name = "Maps"
         self.image = self.load_image("Map1.png", (255, 255, 255))
         self.image = pygame.transform.scale(self.image, (SCREEN_SIZE[0], SCREEN_SIZE[1]))
         super().__init__(group)
@@ -325,6 +330,7 @@ class Maps(pygame.sprite.Sprite, MainMenu):
 
 class Bullet(pygame.sprite.Sprite, MainMenu):
     def __init__(self, group, view, rect_coord):
+        self.name = "Bullet"
         self.image = self.load_image("bullet.png")
         self.image = pygame.transform.scale(self.image, (12, 2))
         super().__init__(group)
@@ -336,6 +342,7 @@ class Bullet(pygame.sprite.Sprite, MainMenu):
         if self.view == "RIGHT":
             self.rect.x += 50
         if self.view == "LEFT":
+            self.image = pygame.transform.flip(self.image, 1, 0)
             self.rect.x -= 10
         self.mask = pygame.mask.from_surface(self.image)
         self.group = group
@@ -347,11 +354,13 @@ class Bullet(pygame.sprite.Sprite, MainMenu):
             self.rect = self.rect.move(-50, 0)
         if pygame.sprite.collide_mask(self, self.map):
             self.group.remove(self)
-#        group1 = pygame.sprite.Group.copy(self.group)
-#        player_1 = self.group.remove(Player1)
-#        if pygame.sprite.collide_mask(self, player_1):
-#            self.group.remove(self)
-#            self.group.remove(Player1)
+        player_sprite = None
+        for sprite in self.group:
+            if sprite.name == "Player1" or sprite.name == "Player2":
+                player_sprite = sprite
+        if player_sprite and pygame.sprite.collide_mask(self, player_sprite):
+            self.group.remove(self)
+            self.group.remove(player_sprite)
 
 
 if __name__ == '__main__':
