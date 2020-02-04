@@ -4,6 +4,7 @@ import random
 
 
 SCREEN_SIZE = [1100, 700]
+check = None
 
 
 class MainMenu:
@@ -192,25 +193,33 @@ class StartGame(MainMenu):
 
         self.all_sprites = pygame.sprite.Group()
         self.clock = pygame.time.Clock()
+        self.playerf_points = 0
+        self.players_points = 0
 
-        self.Game()
+        self.game()
 
-    def Game(self):
+    def game(self):
         self.all_sprites = pygame.sprite.Group()
         Player1(self.all_sprites)
         Player2(self.all_sprites)
         Maps(self.all_sprites)
+        global check
+        check = None
 
         self.pause = False
         running = True
         while running:
             self.screen.fill((0, 0, 0))
+            event = None
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self.pause = not self.pause
+            if not self.pause:
+                self.all_sprites.update(event)
+
             self.all_sprites.draw(self.screen)
 
             # PAUSE
@@ -220,10 +229,30 @@ class StartGame(MainMenu):
             else:
                 self.screen.fill((0, 0, 0))
                 self.all_sprites.draw(self.screen)
-            if not self.pause:
-                self.all_sprites.update(self.clock, event)
+
+            if check:
+                if check == 1:
+                    self.playerf_points += 1
+                if check == 2:
+                    self.players_points += 1
+                running = False
 
             pygame.display.flip()
+        if check:
+            self.start_again()
+
+    def start_again(self):
+        self.game()
+
+    def checking(self):
+        if check == 0:
+            return None
+        if check == 1:
+            return "Player1"
+        if check == 2:
+            return "Player2"
+        if check == 3:
+            return "Draw"
 
 
 class Player1(pygame.sprite.Sprite, MainMenu):
@@ -240,8 +269,9 @@ class Player1(pygame.sprite.Sprite, MainMenu):
         self.map = Maps(group)
         self.group = group
         self.view = "RIGHT"
+        self.alive = True
 
-    def update(self, clock, *args):
+    def update(self, *args):
         if args:
             pressed = pygame.key.get_pressed()
             if pressed[pygame.K_a]:
@@ -286,8 +316,9 @@ class Player2(pygame.sprite.Sprite, MainMenu):
         self.map = Maps(group)
         self.group = group
         self.view = "LEFT"
+        self.alive = True
 
-    def update(self, clock, *args):
+    def update(self, *args):
         if args:
             pressed = pygame.key.get_pressed()
             if pressed[pygame.K_LEFT]:
@@ -348,7 +379,7 @@ class Bullet(pygame.sprite.Sprite, MainMenu):
         self.mask = pygame.mask.from_surface(self.image)
         self.group = group
 
-    def update(self, clock, *args):
+    def update(self, *args):
         if self.view == "RIGHT":
             self.rect = self.rect.move(50, 0)
         if self.view == "LEFT":
@@ -361,12 +392,23 @@ class Bullet(pygame.sprite.Sprite, MainMenu):
                 player_sprite1 = sprite
             if sprite.name == "Player2":
                 player_sprite2 = sprite
+        pl1 = pl2 = True
         if player_sprite1 and pygame.sprite.collide_mask(self, player_sprite1):
             self.group.remove(self)
             self.group.remove(player_sprite1)
+            pl1 = False
         if player_sprite2 and pygame.sprite.collide_mask(self, player_sprite2):
             self.group.remove(self)
             self.group.remove(player_sprite2)
+            pl2 = False
+
+        global check
+        if not (pl1 and pl2):
+            check = 3
+        if not pl1:
+            check = 1
+        if not pl2:
+            check = 2
 
 
 if __name__ == '__main__':
