@@ -221,7 +221,7 @@ class StartGame(MainMenu):
                 self.screen.fill((0, 0, 0))
                 self.all_sprites.draw(self.screen)
             if not self.pause:
-                self.all_sprites.update(event)
+                self.all_sprites.update(self.clock, event)
 
             pygame.display.flip()
 
@@ -241,7 +241,7 @@ class Player1(pygame.sprite.Sprite, MainMenu):
         self.group = group
         self.view = "RIGHT"
 
-    def update(self, *args):
+    def update(self, clock, *args):
         if args:
             pressed = pygame.key.get_pressed()
             if pressed[pygame.K_a]:
@@ -287,7 +287,7 @@ class Player2(pygame.sprite.Sprite, MainMenu):
         self.group = group
         self.view = "LEFT"
 
-    def update(self, *args):
+    def update(self, clock, *args):
         if args:
             pressed = pygame.key.get_pressed()
             if pressed[pygame.K_LEFT]:
@@ -348,7 +348,7 @@ class Bullet(pygame.sprite.Sprite, MainMenu):
         self.mask = pygame.mask.from_surface(self.image)
         self.group = group
 
-    def update(self, *args):
+    def update(self, clock, *args):
         if self.view == "RIGHT":
             self.rect = self.rect.move(50, 0)
         if self.view == "LEFT":
