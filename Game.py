@@ -191,6 +191,7 @@ class StartGame(MainMenu):
         self.screen.fill((0, 0, 0))
 
         self.all_sprites = pygame.sprite.Group()
+        self.clock = pygame.time.Clock()
 
         self.Game()
 
@@ -354,13 +355,18 @@ class Bullet(pygame.sprite.Sprite, MainMenu):
             self.rect = self.rect.move(-50, 0)
         if pygame.sprite.collide_mask(self, self.map):
             self.group.remove(self)
-        player_sprite = None
+        player_sprite1 = player_sprite2 = None
         for sprite in self.group:
-            if sprite.name == "Player1" or sprite.name == "Player2":
-                player_sprite = sprite
-        if player_sprite and pygame.sprite.collide_mask(self, player_sprite):
+            if sprite.name == "Player1":
+                player_sprite1 = sprite
+            if sprite.name == "Player2":
+                player_sprite2 = sprite
+        if player_sprite1 and pygame.sprite.collide_mask(self, player_sprite1):
             self.group.remove(self)
-            self.group.remove(player_sprite)
+            self.group.remove(player_sprite1)
+        if player_sprite2 and pygame.sprite.collide_mask(self, player_sprite2):
+            self.group.remove(self)
+            self.group.remove(player_sprite2)
 
 
 if __name__ == '__main__':
