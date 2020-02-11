@@ -194,8 +194,8 @@ class StartGame(MainMenu):
         self.all_sprites = pygame.sprite.Group()
 
         self.counting = PointCount(self.screen)
-        self.playerf_points = 9
-        self.players_points = 9
+        self.playerf_points = 0
+        self.players_points = 0
 
         self.game()
 
