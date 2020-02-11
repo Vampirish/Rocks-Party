@@ -217,7 +217,7 @@ class ChooseSkin(MainMenu):
                         if self.f_pl == 0:
                             self.f_pl = 1
                     if event.key == pygame.K_a:
-                        self.f_pl = (self.f_pl - 1 + 5) % 5
+                        self.f_pl = (self.f_pl - 1) % 5
                         if self.f_pl == 0:
                             self.f_pl = 4
                     if event.key == pygame.K_RIGHT:
@@ -225,7 +225,7 @@ class ChooseSkin(MainMenu):
                         if self.s_pl == 0:
                             self.s_pl = 1
                     if event.key == pygame.K_LEFT:
-                        self.s_pl = (self.f_pl - 1 + 5) % 5
+                        self.s_pl = (self.s_pl - 1) % 5
                         if self.s_pl == 0:
                             self.s_pl = 4
 
