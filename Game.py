@@ -151,7 +151,7 @@ class Credits:
                        "Programmer", "Kenes Amina", " ", "Art designer", "Kenes Amina", " ", " ", " ",
                        "SPECIAL THANKS", " ", "Eskendir Maratovich", "Khodzhaev Damir", "Denis Suharev",
                        "Kenes Aigerim", "Zhaksybekuly Bigazi", "Abdeldinova Asem",
-                       "Kenes Balzhan", "Assylbek Akzhan", "Kenes Tileugazy"]
+                       "Lira Khairullina", "Kenes Balzhan", "Assylbek Akzhan", "Kenes Tileugazy"]
 
         texts = []
         for i, line in enumerate(credit_list):
@@ -192,17 +192,19 @@ class StartGame(MainMenu):
         self.screen.fill((0, 0, 0))
 
         self.all_sprites = pygame.sprite.Group()
-        self.clock = pygame.time.Clock()
-        self.playerf_points = 0
-        self.players_points = 0
+
+        self.counting = PointCount(self.screen)
+        self.playerf_points = 9
+        self.players_points = 9
 
         self.game()
 
     def game(self):
         self.all_sprites = pygame.sprite.Group()
+        Maps(self.all_sprites)
         Player1(self.all_sprites)
         Player2(self.all_sprites)
-        Maps(self.all_sprites)
+        background = Backgroud()
         global check
         check = None
 
@@ -210,6 +212,7 @@ class StartGame(MainMenu):
         running = True
         while running:
             self.screen.fill((0, 0, 0))
+            self.screen.blit(background.draw(), (0, 0))
             event = None
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -227,15 +230,22 @@ class StartGame(MainMenu):
                 image = self.load_image("pause.png", (255, 255, 255))
                 self.screen.blit(image, (0, 0))
             else:
-                self.screen.fill((0, 0, 0))
                 self.all_sprites.draw(self.screen)
 
             if check:
-                if check == 1:
-                    self.playerf_points += 1
                 if check == 2:
+                    self.playerf_points += 1
+                if check == 1:
                     self.players_points += 1
                 running = False
+
+            fplayer, splayer = self.counting.update(self.playerf_points, self.players_points)
+            if fplayer == "win":
+                Winner("first")
+                return
+            if splayer == "win":
+                Winner("second")
+                return
 
             pygame.display.flip()
         if check:
@@ -255,6 +265,69 @@ class StartGame(MainMenu):
             return "Draw"
 
 
+class Winner(MainMenu):
+    def __init__(self, player):
+        pygame.init()
+        self.size = width, height = 1100, 700
+        pygame.display.set_caption('Rocks Party')
+        self.screen = pygame.display.set_mode(self.size)
+        self.screen.fill((0, 0, 0))
+        self.player = player
+
+        self.winner_player()
+        self.working()
+
+    def winner_player(self):
+        image2 = self.load_image("End.png")
+        image2 = pygame.transform.scale(image2, (1100, 700))
+        self.screen.blit(image2, (0, 0))
+
+        if self.player == "first":
+            image1 = self.load_image("win1.png", (255, 255, 255))
+        elif self.player == "second":
+            image1 = self.load_image("win2.png", (255, 255, 255))
+        image1 = pygame.transform.scale(image1, (1000, 300))
+        self.screen.blit(image1, (50, 80))
+
+    def working(self):
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        running = False
+                    if event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
+                        StartGame()
+                        running = False
+            pygame.display.flip()
+
+
+class PointCount(MainMenu):
+    def __init__(self, screen):
+        self.screen = screen
+        self.number = ["zero", "one", "two", "three", "four",
+                       "five", "six", "seven", "eight", "nine"]
+
+    def update(self, playerf_points, players_points):
+        fplayer = splayer = None
+        if playerf_points < 10:
+            image1 = self.load_image(self.number[playerf_points] + ".png", (255, 255, 255))
+            image1 = pygame.transform.scale(image1, (100, 100))
+            self.screen.blit(image1, (50, 550))
+        else:
+            fplayer = "win"
+
+        if players_points < 10:
+            image2 = self.load_image(self.number[players_points] + ".png", (255, 255, 255))
+            image2 = pygame.transform.scale(image2, (100, 100))
+            self.screen.blit(image2, (950, 550))
+        else:
+            splayer = "win"
+        return fplayer, splayer
+
+
 class Player1(pygame.sprite.Sprite, MainMenu):
     def __init__(self, group):
         self.name = "Player1"
@@ -266,8 +339,11 @@ class Player1(pygame.sprite.Sprite, MainMenu):
         self.mask = pygame.mask.from_surface(self.image)
         self.rect.x = 200
         self.rect.y = 200
-        self.map = Maps(group)
         self.group = group
+        self.map = None
+        for sprite in self.group:
+            if sprite.name == "Maps":
+                self.map = sprite
         self.view = "RIGHT"
         self.alive = True
 
@@ -304,7 +380,7 @@ class Player1(pygame.sprite.Sprite, MainMenu):
 class Player2(pygame.sprite.Sprite, MainMenu):
     def __init__(self, group):
         self.name = "Player2"
-        self.image = self.load_image("cub2.png")
+        self.image = self.load_image("cub2.png", (255, 255, 255))
         self.image = pygame.transform.scale(self.image, (50, 50))
         self.pl_image = self.image
         self.image = pygame.transform.flip(self.pl_image, 1, 0)
@@ -313,8 +389,11 @@ class Player2(pygame.sprite.Sprite, MainMenu):
         self.mask = pygame.mask.from_surface(self.image)
         self.rect.x = 800
         self.rect.y = 200
-        self.map = Maps(group)
         self.group = group
+        self.map = None
+        for sprite in self.group:
+            if sprite.name == "Maps":
+                self.map = sprite
         self.view = "LEFT"
         self.alive = True
 
@@ -351,13 +430,24 @@ class Player2(pygame.sprite.Sprite, MainMenu):
 class Maps(pygame.sprite.Sprite, MainMenu):
     def __init__(self, group):
         self.name = "Maps"
-        self.image = self.load_image("Map1.png", (255, 255, 255))
+        num = random.choice([i for i in range(1, 7)])
+        self.image = self.load_image("Map" + str(num) + ".png", (255, 255, 255))
         self.image = pygame.transform.scale(self.image, (SCREEN_SIZE[0], SCREEN_SIZE[1]))
         super().__init__(group)
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
         self.rect.x = 0
         self.rect.y = 0
+
+
+class Backgroud(MainMenu):
+    def __init__(self):
+        self.number = random.choice([i for i in range(1, 6)])
+
+    def draw(self):
+        image = self.load_image("background" + str(self.number) + ".png")
+        image = pygame.transform.scale(image, (1100, 700))
+        return image
 
 
 class Bullet(pygame.sprite.Sprite, MainMenu):
@@ -367,7 +457,12 @@ class Bullet(pygame.sprite.Sprite, MainMenu):
         self.image = pygame.transform.scale(self.image, (12, 2))
         super().__init__(group)
         self.view = view
-        self.map = Maps(group)
+        self.map = None
+        self.group = group
+        for sprite in self.group:
+            if sprite.name == "Maps":
+                self.map = sprite
+
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = rect_coord
         self.rect.y += 34
