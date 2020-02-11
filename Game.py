@@ -37,7 +37,7 @@ class MainMenu:
                         if self.exit:
                             running = False
                         if self.start:
-                            StartGame()
+                            ChooseSkin()
                         if self.rules:
                             Rules()
                     if self.start:
@@ -183,8 +183,86 @@ class Credits:
             self.clock.tick(self.speed)
 
 
-class StartGame(MainMenu):
+class ChooseSkin(MainMenu):
     def __init__(self):
+        pygame.init()
+        pygame.display.set_caption('Rocks Party')
+        self.size = width, height = 1100, 700
+        self.screen = pygame.display.set_mode(self.size)
+        self.screen.fill((0, 0, 0))
+
+        self.f_pl = self.s_pl = 1
+        self.ready_f = self.ready_s = False
+
+        self.menu_working()
+
+    def menu_working(self):
+        self.set_img()
+
+        running = True
+        while running:
+            if self.ready_f and self.ready_s:
+                StartGame("cub" + str(self.f_pl) + ".png", "cub" + str(self.s_pl) + ".png")
+                return
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        self.ready_f = True
+                    if event.key == pygame.K_RETURN:
+                        self.ready_s = True
+                    if event.key == pygame.K_d:
+                        self.f_pl = (self.f_pl + 1) % 5
+                        if self.f_pl == 0:
+                            self.f_pl = 1
+                    if event.key == pygame.K_a:
+                        self.f_pl = (self.f_pl - 1 + 5) % 5
+                        if self.f_pl == 0:
+                            self.f_pl = 4
+                    if event.key == pygame.K_RIGHT:
+                        self.s_pl = (self.s_pl + 1) % 5
+                        if self.s_pl == 0:
+                            self.s_pl = 1
+                    if event.key == pygame.K_LEFT:
+                        self.s_pl = (self.f_pl - 1 + 5) % 5
+                        if self.s_pl == 0:
+                            self.s_pl = 4
+
+                    self.screen.fill((0, 0, 0))
+
+                    self.set_img()
+
+            pygame.display.flip()
+
+    def set_img(self):
+        image1 = self.load_image("cub" + str(self.f_pl) + ".png", (255, 255, 255))
+        image1 = pygame.transform.scale(image1, (100, 100))
+        self.screen.blit(image1, (150, 300))
+
+        image1 = self.load_image("cub" + str(self.s_pl) + ".png", (255, 255, 255))
+        image1 = pygame.transform.scale(image1, (100, 100))
+        self.screen.blit(image1, (850, 300))
+
+        if self.ready_f:
+            image1 = self.load_image("ready.png", (255, 255, 255))
+        else:
+            image1 = self.load_image("wait.png", (255, 255, 255))
+        image1 = pygame.transform.scale(image1, (300, 100))
+        self.screen.blit(image1, (50, 500))
+
+        if self.ready_s:
+            image1 = self.load_image("ready.png", (255, 255, 255))
+        else:
+            image1 = self.load_image("wait.png", (255, 255, 255))
+        image1 = pygame.transform.scale(image1, (300, 100))
+        self.screen.blit(image1, (750, 500))
+
+
+class StartGame(MainMenu):
+    def __init__(self, img_fpl, img_spl):
+        self.img_fpl = img_fpl
+        self.img_spl = img_spl
         pygame.init()
         pygame.display.set_caption('Rocks Party')
         self.size = width, height = 1100, 700
@@ -202,8 +280,8 @@ class StartGame(MainMenu):
     def game(self):
         self.all_sprites = pygame.sprite.Group()
         Maps(self.all_sprites)
-        Player1(self.all_sprites)
-        Player2(self.all_sprites)
+        Player1(self.all_sprites, self.img_fpl)
+        Player2(self.all_sprites, self.img_spl)
         background = Backgroud()
         global check
         check = None
@@ -329,9 +407,9 @@ class PointCount(MainMenu):
 
 
 class Player1(pygame.sprite.Sprite, MainMenu):
-    def __init__(self, group):
+    def __init__(self, group, img):
         self.name = "Player1"
-        self.image = self.load_image("cub1.png", (255, 255, 255))
+        self.image = self.load_image(img, (255, 255, 255))
         self.image = pygame.transform.scale(self.image, (50, 50))
         self.pl_image = self.image
         super().__init__(group)
@@ -378,9 +456,9 @@ class Player1(pygame.sprite.Sprite, MainMenu):
 
 
 class Player2(pygame.sprite.Sprite, MainMenu):
-    def __init__(self, group):
+    def __init__(self, group, img):
         self.name = "Player2"
-        self.image = self.load_image("cub2.png", (255, 255, 255))
+        self.image = self.load_image(img, (255, 255, 255))
         self.image = pygame.transform.scale(self.image, (50, 50))
         self.pl_image = self.image
         self.image = pygame.transform.flip(self.pl_image, 1, 0)
