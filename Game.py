@@ -377,7 +377,7 @@ class Winner(MainMenu):
                     if event.key == pygame.K_ESCAPE:
                         running = False
                     if event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
-                        StartGame()
+                        ChooseSkin()
                         running = False
             pygame.display.flip()
 
@@ -531,8 +531,8 @@ class Backgroud(MainMenu):
 class Bullet(pygame.sprite.Sprite, MainMenu):
     def __init__(self, group, view, rect_coord):
         self.name = "Bullet"
-        self.image = self.load_image("bullet.png")
-        self.image = pygame.transform.scale(self.image, (12, 2))
+        self.image = self.load_image("bullet.png", (255, 255, 255))
+        self.image = pygame.transform.scale(self.image, (15, 5))
         super().__init__(group)
         self.view = view
         self.map = None
